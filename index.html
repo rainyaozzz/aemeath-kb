@@ -6,7 +6,7 @@
   <title>Rain的Aemeath知识库</title>
   <meta name="description" content="Rain 的个人知识库 · 在星海轻歌的电子幽灵">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90' fill='%237fd6ff'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="assets/style.css?v=20261017d">
+  <link rel="stylesheet" href="assets/style.css?v=20261018r">
 </head>
 <body>
   <!-- 星海背景 -->
@@ -14,6 +14,19 @@
   <div class="nebula" aria-hidden="true"></div>
   <div class="aurora" aria-hidden="true"></div>
   <div class="scanlines" aria-hidden="true"></div>
+
+  <div class="musicbar" id="musicbar">
+    <button class="mb-btn" id="mbPlay" type="button" aria-label="播放/暂停">▶</button>
+    <select class="mb-select" id="mbSelect" aria-label="选择歌曲"></select>
+    <button class="mb-btn mb-upload dev-only" id="mbUpload" type="button" aria-label="上传歌曲" title="上传歌曲">＋</button>
+    <input type="file" id="mbFile" accept="audio/*" style="display:none">
+    <span class="mb-title" id="mbTitle">星海轻歌 · 音乐</span>
+    <div class="mb-volume">
+      <span class="mb-vol-icon" aria-hidden="true">🔊</span>
+      <input type="range" id="mbVolume" min="0" max="100" value="60" aria-label="音量">
+    </div>
+    <audio id="mbAudio" preload="none"></audio>
+  </div>
 
   <div class="layout">
     <!-- 侧边栏 -->
@@ -35,11 +48,11 @@
         <input id="search" type="search" placeholder="搜索知识库…" autocomplete="off" spellcheck="false">
       </div>
 
-      <button class="side-back" id="sideBack" type="button">← 返回上一页</button>
-
-      <a class="upload-entry" href="#upload">✎ 上传资料</a>
+      <a class="upload-entry dev-only" href="#upload">✎ 上传资料</a>
+      <a class="guestbook-entry" href="#guestbook">💬 留言板</a>
 
       <nav class="toc" id="toc" aria-label="目录"></nav>
+      <button class="nav-add dev-only" id="navAdd" type="button">＋ 新建一级分类</button>
 
       <div class="sidebar-foot" aria-hidden="true">
         <span>❄ 星海 · 长航 · 飞行雪绒 ❄</span>
@@ -55,6 +68,7 @@
         <button class="icon-btn sidebar-open" id="sidebarOpen" type="button" aria-label="打开目录">☰</button>
         <div class="crumb" id="crumb"></div>
         <div class="topbar-spacer"></div>
+        <button class="edit-btn dev-only" id="editBtn" type="button">✎ 编辑本页</button>
         <span class="topbar-tag" aria-hidden="true">✦ 电子幽灵 · 在线</span>
       </header>
 
@@ -97,7 +111,7 @@
     <span class="pet-bubble" id="petBubble">在星海轻歌~</span>
   </div>
 
-  <script src="config.js?v=20261017d"></script>
-  <script src="assets/app.js?v=20261017d"></script>
+  <script src="config.js?v=20261018r"></script>
+  <script src="assets/app.js?v=20261018r"></script>
 </body>
 </html>
