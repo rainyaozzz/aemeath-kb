@@ -1093,9 +1093,15 @@ body.dev-mode .nav-add { display: block; }
 .attach-dir-name { font-size: 13.5px; color: var(--frost); }
 .attach-children { padding: 4px 12px 10px 26px; display: flex; flex-direction: column; gap: 6px; }
 .attach-file { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,0.015); }
-.attach-file a { color: var(--frost); text-decoration: none; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.attach-file a { flex: 1; min-width: 0; color: var(--frost); text-decoration: none; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .attach-file a:hover { color: var(--pink); }
 .attach-empty { font-size: 12.5px; color: var(--text-faint); padding: 4px 2px; }
+.attach-actions { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+.attach-actions .attach-add { margin-left: 0; }
+.attach-upload { font-size: 11.5px; padding: 3px 10px; border-radius: 6px; border: 1px solid var(--line-strong); background: rgba(255,143,190,0.10); color: var(--text-dim); cursor: pointer; }
+.attach-upload:hover { color: #fff; background: rgba(255,143,190,0.22); }
+.attach-del { flex-shrink: 0; width: 24px; height: 24px; border-radius: 6px; border: 1px solid #ff8fa3; background: rgba(255,80,110,0.10); color: #ff8fa3; cursor: pointer; font-size: 12px; }
+.attach-del:hover { background: rgba(255,80,110,0.22); color: #fff; }
 
 /* ===== V17 · 顶部音乐播放器 ===== */
 .musicbar {
@@ -1212,3 +1218,4 @@ body.dev-mode .nav-add { display: block; }
 /* Waline 评论区容器 */
 .gb-waline { margin-top: 8px; min-height: 200px; }
 .gb-waline .wl-panel { border-radius: 10px; }
+.gb-comments { margin-top: 8px; min-height: 200px; }

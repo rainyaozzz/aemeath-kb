@@ -118,3 +118,20 @@ window.KB_MUSIC = {
 window.KB_WALINE = {
   serverURL: ""
 };
+
+/* ============================================================
+ *  留言板评论服务（线上让别人也能留言，最简单的方案）
+ *  ------------------------------------------------------------
+ *  使用 Utterances：基于 GitHub Issues，无需数据库、无需服务器。
+ *  前提：在仓库上安装 Utterances App（一次即可）：
+ *    https://github.com/apps/utterances  → Install → 选择 aemeath-kb
+ *
+ *  type = "utterances" 时用 Utterances（访客用 GitHub 账号留言）；
+ *  type = "local"      时用本地留言板（只有本地能留言）。
+ * ============================================================ */
+window.KB_COMMENTS = {
+  type: "utterances",
+  repo: "rainyaozzz/aemeath-kb",
+  issueTerm: "pathname",
+  theme: "github-dark"
+};

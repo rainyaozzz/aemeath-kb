@@ -611,8 +611,11 @@
         var sec = document.createElement('section');
         sec.className = 'attachments';
         sec.innerHTML =
-          '<h2 class="attach-title">📎 本页资料' +
-          (window.__DEV__ ? '<button type="button" class="attach-add" data-dir="' + escapeHtml(dir) + '">＋ 新增分类</button>' : '') +
+          '<h2 class="attach-title"><span>📎 本页资料</span>' +
+          (window.__DEV__ ? '<span class="attach-actions">' +
+            '<button type="button" class="attach-upload" data-dir="' + escapeHtml(dir) + '">＋上传</button>' +
+            '<button type="button" class="attach-add" data-dir="' + escapeHtml(dir) + '">＋ 新增分类</button>' +
+            '</span>' : '') +
           '</h2>' +
           '<div class="attach-tree">' + renderAttachNode(dir, m) + '</div>';
         contentEl.appendChild(sec);
@@ -644,14 +647,20 @@
       var sub = dir + '/' + name;
       html += '<details class="attach-dir">' +
         '<summary><span class="attach-dir-name">📁 ' + escapeHtml(name) + '</span>' +
-        (window.__DEV__ ? '<button type="button" class="attach-add" data-dir="' + escapeHtml(sub) + '">＋</button>' : '') +
+        (window.__DEV__ ? '<span class="attach-actions">' +
+          '<button type="button" class="attach-upload" data-dir="' + escapeHtml(sub) + '">＋上传</button>' +
+          '<button type="button" class="attach-add" data-dir="' + escapeHtml(sub) + '">＋分类</button>' +
+          '</span>' : '') +
         '</summary>' +
         '<div class="attach-children">' + renderAttachNode(sub, manifest) + '</div>' +
         '</details>';
     });
     files.forEach(function (f) {
-      html += '<div class="attach-file"><a href="' + escapeHtml(f.url) + '" target="_blank" rel="noopener">📄 ' +
-        escapeHtml(f.name) + '</a><span class="attach-size">' + formatSize(f.size) + '</span></div>';
+      html += '<div class="attach-file">' +
+        '<a href="' + escapeHtml(f.url) + '" target="_blank" rel="noopener">📄 ' + escapeHtml(f.name) + '</a>' +
+        '<span class="attach-size">' + formatSize(f.size) + '</span>' +
+        (window.__DEV__ ? '<button type="button" class="attach-del" data-url="' + escapeHtml(f.url) + '" title="删除文件">✕</button>' : '') +
+        '</div>';
     });
     return html || '<div class="attach-empty">（空）</div>';
   }
@@ -668,6 +677,42 @@
     }).then(function (r) { return r.json(); }).then(function (res) {
       if (res && res.ok) loadAttachments(currentFile);
       else alert('创建分类失败：' + ((res && res.error) || '未知错误'));
+    }).catch(function () { alert('无法连接本地服务器'); });
+  }
+
+  function uploadToDir(dir) {
+    if (!window.__DEV__) { alert('上传需要本地运行 预览.bat'); return; }
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = function () {
+      var f = input.files && input.files[0];
+      if (!f) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        fetch('api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: askPass(), filename: f.name, data: reader.result, folder: dir })
+        }).then(function (r) { return r.json(); }).then(function (res) {
+          if (res && res.ok) loadAttachments(currentFile);
+          else alert('上传失败：' + ((res && res.error) || '未知错误'));
+        }).catch(function () { alert('无法连接本地服务器'); });
+      };
+      reader.readAsDataURL(f);
+    };
+    input.click();
+  }
+
+  function deleteAttach(url) {
+    if (!window.__DEV__) return;
+    if (!confirm('确定删除这个文件吗？')) return;
+    fetch('api/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: askPass(), file: url })
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      if (res && res.ok) loadAttachments(currentFile);
+      else alert('删除失败：' + ((res && res.error) || '未知错误'));
     }).catch(function () { alert('无法连接本地服务器'); });
   }
 
@@ -873,7 +918,10 @@
   function renderGuestbookContent(intro, messages) {
     var contentEl = $('#content');
     var walineCfg = window.KB_WALINE || {};
-    var useWaline = !!(walineCfg.serverURL && String(walineCfg.serverURL).trim());
+    var commentsCfg = window.KB_COMMENTS || {};
+    var mode = 'local';
+    if (walineCfg.serverURL && String(walineCfg.serverURL).trim()) mode = 'waline';
+    else if (commentsCfg.type === 'utterances' && commentsCfg.repo) mode = 'utterances';
     var html = '' +
       '<div class="gb">' +
       '  <div class="gb-head">' +
@@ -881,8 +929,10 @@
       (window.__DEV__ ? '<button class="gb-edit" id="gbEdit" type="button">✎ 编辑介绍</button>' : '') +
       '  </div>' +
       '  <div class="gb-intro">' + (intro ? renderMarkdown(intro) : '<p class="gb-empty">留言板介绍还没有写。</p>') + '</div>';
-    if (useWaline) {
+    if (mode === 'waline') {
       html += '<div id="waline" class="gb-waline"></div>';
+    } else if (mode === 'utterances') {
+      html += '<h2 class="gb-section">💬 留言</h2><div id="comments" class="gb-comments"></div>';
     } else {
       html += '<h2 class="gb-section">✍ 写留言</h2>' +
         '<form class="gb-form" id="gbForm">' +
@@ -899,8 +949,10 @@
     html += '</div>';
     contentEl.innerHTML = html;
     bindGuestbookHead(intro);
-    if (useWaline) {
+    if (mode === 'waline') {
       mountWaline(document.getElementById('waline'));
+    } else if (mode === 'utterances') {
+      mountUtterances(document.getElementById('comments'));
     } else {
       renderGuestbookList(messages);
       bindGuestbookForm(messages);
@@ -909,6 +961,22 @@
     if (tocEl) {
       tocEl.querySelectorAll('.tree-link').forEach(function (a) { a.classList.remove('active'); });
     }
+  }
+
+  function mountUtterances(el) {
+    if (!el) return;
+    var cfg = window.KB_COMMENTS || {};
+    var repo = cfg.repo || '';
+    if (!repo) return;
+    el.innerHTML = '';
+    var s = document.createElement('script');
+    s.src = 'https://utteranc.es/client.js';
+    s.setAttribute('repo', repo);
+    s.setAttribute('issue-term', cfg.issueTerm || 'pathname');
+    s.setAttribute('theme', cfg.theme || 'github-dark');
+    s.setAttribute('crossorigin', 'anonymous');
+    s.async = true;
+    el.appendChild(s);
   }
 
   function renderGuestbookList(messages) {
@@ -1268,11 +1336,23 @@
           });
         }
         document.addEventListener('click', function (e) {
-          var b = e.target.closest('.attach-add');
-          if (!b) return;
-          e.preventDefault();
-          e.stopPropagation();
-          addAttachDir(b.getAttribute('data-dir'));
+          var add = e.target.closest('.attach-add');
+          if (add) {
+            e.preventDefault(); e.stopPropagation();
+            addAttachDir(add.getAttribute('data-dir'));
+            return;
+          }
+          var up = e.target.closest('.attach-upload');
+          if (up) {
+            e.preventDefault(); e.stopPropagation();
+            uploadToDir(up.getAttribute('data-dir'));
+            return;
+          }
+          var del = e.target.closest('.attach-del');
+          if (del) {
+            e.preventDefault(); e.stopPropagation();
+            deleteAttach(del.getAttribute('data-url'));
+          }
         });
       })
       .catch(function () { /* 静态托管：只读模式 */ });
