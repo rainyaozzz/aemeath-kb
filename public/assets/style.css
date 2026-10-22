@@ -1219,3 +1219,31 @@ body.dev-mode .nav-add { display: block; }
 .gb-waline { margin-top: 8px; min-height: 200px; }
 .gb-waline .wl-panel { border-radius: 10px; }
 .gb-comments { margin-top: 8px; min-height: 200px; }
+
+/* 阅读与无障碍增强，保留原有角色主题 */
+:root { --text-faint: #a4a0b3; }
+:focus-visible { outline: 2px solid #ffb1d4 !important; outline-offset: 4px; }
+.skip-link { position:fixed; top:-100px; left:16px; z-index:9999; padding:12px; background:#252132; color:white; }
+.skip-link:focus { top:12px; }
+.reading-toggle,.copy-code { padding:7px 12px; border:1px solid var(--line-strong); border-radius:8px; background:var(--panel-solid); color:var(--text); cursor:pointer; }
+.reading-toggle[aria-pressed="true"] { border-color:#ffb1d4; }
+body.reading-mode #sky,body.reading-mode .nebula,body.reading-mode .aurora,body.reading-mode .scanlines,body.reading-mode .pet,body.reading-mode .musicbar,body.reading-mode .hero,body.reading-mode .pinned-wrap { display:none !important; }
+body.reading-mode * { animation:none !important; transition:none !important; }
+body.reading-mode .content { font-size:18px; max-width:850px; }
+.content { overflow-wrap:anywhere; }
+.content h1,.content h2,.content h3 { scroll-margin-top:80px; }
+.content pre { position:relative; padding-top:46px; }
+.copy-code { position:absolute; right:8px; top:8px; font-size:12px; }
+.article-toc { padding:16px 20px; margin-bottom:28px; border:1px solid var(--line); border-radius:12px; background:var(--panel-solid); }
+.article-toc a { display:block; margin-top:7px; }
+.continue-reading { display:block; padding:14px 18px; margin-bottom:20px; border:1px solid var(--line-strong); border-radius:10px; }
+.tree-link small { display:block; font-size:12px; color:var(--text-dim); white-space:normal; line-height:1.6; }
+.search-count { padding:10px 16px; font-size:13px; color:var(--text-dim); }
+.attach-file { flex-wrap:wrap; padding:10px 0; gap:10px; }
+.attach-file a { white-space:normal; overflow-wrap:anywhere; }
+.attach-file .attach-download { flex:0 0 auto; font-size:13px; }
+.empty-page { padding:20px 0; }
+.brand-en,.credit,.attach-add,.attach-upload { font-size:12px; }
+.nav-saving .tree-actions,.nav-saving #navAdd { pointer-events:none; opacity:.5; }
+@media(max-width:860px) { body.sidebar-visible { overflow:hidden; } .icon-btn,.mb-btn { min-width:40px; min-height:40px; } .topbar-tag { display:none; } .reading-toggle { font-size:13px; } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; } #sky { display:none; } }
